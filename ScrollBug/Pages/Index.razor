@@ -1,0 +1,38 @@
+﻿@page "/"
+@inject HttpClient httpClient
+@inject IDialogService DialogService
+
+
+<MudButton @onclick="OpenDialog" Variant="Variant.Filled" Color="Color.Primary">
+  Open Dialog
+</MudButton>
+
+<MudTable Items="@ToDos" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+  <HeaderContent>
+    <MudTh>UserId</MudTh>
+    <MudTh>Id</MudTh>
+    <MudTh>Title</MudTh>
+    <MudTh>Completed</MudTh>
+  </HeaderContent>
+  <RowTemplate>
+    <MudTd DataLabel="UserId">@context.UserId</MudTd>
+    <MudTd DataLabel="Id">@context.Id</MudTd>
+    <MudTd DataLabel="Title">@context.Title</MudTd>
+    <MudTd DataLabel="Completed">@context.Completed</MudTd>
+  </RowTemplate>
+</MudTable>
+@code {
+
+  private bool _hidePosition;
+  private bool _loading;
+  private IEnumerable<ToDo> ToDos = new List<ToDo>();
+
+  protected override async Task OnInitializedAsync() {
+    ToDos = await httpClient.GetFromJsonAsync<List<ToDo>>("https://jsonplaceholder.typicode.com/todos");
+  }
+
+  private void OpenDialog() {
+    var options = new DialogOptions { CloseOnEscapeKey = true };
+    DialogService.Show<DialogExample>("Dialog", options);
+  }
+}
